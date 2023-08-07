@@ -75,7 +75,7 @@ class BboxProcessor(BaseProcessor):
 
     def execute(self, data):
 
-        mimetype = 'image/netcdf'
+        mimetype = 'application/netcdf'
         
         bbox=data.get('bbox')
         if bbox is None:
@@ -92,17 +92,13 @@ class BboxProcessor(BaseProcessor):
 
 
         data = xr.open_dataset('/workspaces/pygeoapi/data/20230720_PWAT_EATM_0.nc')
-        value = data.sel(latitude=slice(lat_max,lat_min), longitude=slice(lon_min, lon_max))
+        cropped = data.sel(latitude=slice(lat_max,lat_min), longitude=slice(lon_min, lon_max))
 
-        outputs = {
-            'id': 'echo',
-            'coords': coords,
-            'value': value
-        }
-        print(value)
+
+        print(cropped)
         with tempfile.TemporaryFile() as fp:
                 LOGGER.debug('Returning data in native NetCDF format')
-                fp.write(value.to_netcdf())
+                fp.write(cropped.to_netcdf())
                 fp.seek(0)
                 nc=fp.read()
                 
