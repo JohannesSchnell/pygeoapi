@@ -302,3 +302,11 @@ resources:
         type: process
         processor:
             name: HelloWorld
+    time:
+        type: process
+        processor:
+            name: Time
+    bbox:
+        type: process
+        processor:
+            name: Bbox

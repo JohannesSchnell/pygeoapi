@@ -1,28 +1,23 @@
 import logging
 
 from pygeoapi.process.base import BaseProcessor, ProcessorExecuteError
-
+import datetime
 
 LOGGER = logging.getLogger(__name__)
 
 #: Process metadata and description
 PROCESS_METADATA = {
     'version': '0.2.0',
-    'id': 'hello-world',
+    'id': 'time',
     'title': {
-        'en': 'Hello World',
-        'fr': 'Bonjour le Monde'
+        'en': 'time'
     },
     'description': {
-        'en': 'An example process that takes a name as input, and echoes '
-              'it back as output. Intended to demonstrate a simple '
-              'process with a single literal input.',
-        'fr': 'Un exemple de processus qui prend un nom en entrée et le '
-              'renvoie en sortie. Destiné à démontrer un processus '
-              'simple avec une seule entrée littérale.',
+        'en': 'sends back current time'
+        
     },
     'jobControlOptions': ['sync-execute', 'async-execute'],
-    'keywords': ['hello world', 'example', 'echo'],
+    'keywords': ['example', 'time'],
     'links': [{
         'type': 'text/html',
         'rel': 'about',
@@ -38,28 +33,16 @@ PROCESS_METADATA = {
             'schema': {
                 'type': 'string'
             },
-            'minOccurs': 1,
+            'minOccurs': 0,
             'maxOccurs': 1,
             'metadata': None,  # TODO how to use?
             'keywords': ['full name', 'personal']
-        },
-        'message': {
-            'title': 'Message',
-            'description': 'An optional message to echo as well',
-            'schema': {
-                'type': 'string'
-            },
-            'minOccurs': 0,
-            'maxOccurs': 1,
-            'metadata': None,
-            'keywords': ['message']
         }
     },
     'outputs': {
         'echo': {
-            'title': 'Hello, world',
-            'description': 'A "hello world" echo with the name and (optional)'
-                           ' message submitted for processing',
+            'title': 'time',
+            'description': 'time',
             'schema': {
                 'type': 'object',
                 'contentMediaType': 'application/json'
@@ -68,8 +51,48 @@ PROCESS_METADATA = {
     },
     'example': {
         'inputs': {
-            'name': 'World',
-            'message': 'An optional message.',
+            'name': 'hans'
         }
     }
 }
+
+
+
+
+class TimeProcessor(BaseProcessor):
+    """Time Processor example"""
+
+    def __init__(self, processor_def):
+        """
+        Initialize object
+
+        :param processor_def: provider definition
+
+        :returns: pygeoapi.process.time.TimeProcessor
+        """
+
+        super().__init__(processor_def, PROCESS_METADATA)
+
+    def execute(self, data):
+
+        mimetype = 'application/json'
+        name = data.get('name')
+
+        if name is None:
+            #raise ProcessorExecuteError('Cannot process without a name')
+            name = 'Günther'
+
+
+        time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        value = f'Hello {name}! Currently it is {time}'.strip()
+
+        outputs = {
+            'id': 'echo',
+            'value': value
+        }
+
+        return mimetype, outputs
+
+    def __repr__(self):
+        return f'<TimeProcessor> {self.name}'
