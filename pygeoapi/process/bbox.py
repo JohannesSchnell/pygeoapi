@@ -103,7 +103,7 @@ class BboxProcessor(BaseProcessor):
                 nc=fp.read()
                 
 
-                return mimetype, fp.read()
+                return mimetype, nc
 
     def __repr__(self):
         return f'<BboxProcessor> {self.name}'
